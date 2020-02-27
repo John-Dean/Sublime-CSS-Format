@@ -48,11 +48,16 @@ class CssFormater():
 		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
 		strings = re.findall(stringReg, code)
 		code = re.sub(stringReg, r'\1!string!', code)
+		
+		#Protect SASS variables
+		sassvarsReg = r'\#\{([^}])*\}'
+		sassvars = re.findall(sassvarsReg, code)
+		code = re.sub(sassvarsReg, r'\1!sass!', code)
 
 		# Protect urls
 		urlReg = r'((?:url|url-prefix|regexp)\([^\)]+\))'
 		urls = re.findall(urlReg, code)
-		code = re.sub(urlReg, '!url!', code)
+		code = re.sub(urlReg, r'\1!url!', code)
 
 		# Pre process
 		code = re.sub(r'\s*([\{\}:;,])\s*', r'\1', code)	# remove \s before and after characters {}:;,
@@ -105,9 +110,13 @@ class CssFormater():
 		for i in range(len(strings)):
 			code = code.replace('!string!', strings[i][1], 1)
 
+		# Backfill sass
+		for i in range(len(sassvars)):
+			code = code.replace('!sass!', sassvars[i][1], 1)
+
 		# Backfill urls
 		for i in range(len(urls)):
-			code = code.replace('!url!', urls[i], 1)
+			code = code.replace('!url!', urls[i][1], 1)
 
 		# Trim
 		code = re.sub(r'^\s*(\S+(\s+\S+)*)\s*$', r'\1', code)
@@ -264,10 +273,18 @@ class CssFormater():
 			nextLevel = level + adjustment
 			thisLevel = level if adjustment > 0 else nextLevel
 			level = nextLevel
-
+			
 			# Add indentation
-			lines[i] = self.indentation * thisLevel + lines[i] if lines[i] != '' else ''
+			lines[i] = self.indentation * thisLevel + lines[i]
+			
+			
+			#Test for stupid new lines
+			if i > 1:
+				if lines[i - 1].strip() == "":
+					if lines[i].strip() == "}":
+						lines[i-1] = "!stopnewline!";		 
 
+		lines	=	list(filter(lambda a: a != "!stopnewline!", lines))
 		code = '\n'.join(lines)
 
 		return code
