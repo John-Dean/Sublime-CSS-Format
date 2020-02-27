@@ -50,7 +50,7 @@ class CssFormater():
 			# Protect comments //
 			comment2Reg = r'\/\/.*\n'
 			comments2 = re.findall(comment2Reg, code)
-			code = re.sub(comment2Reg, '!comment2!', code)
+			code = re.sub(comment2Reg, '!comment2!\n', code)
 
 		# Protect strings
 		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
@@ -110,13 +110,14 @@ class CssFormater():
 			# Backfill comments
 			for i in range(len(comments)):
 				code = re.sub(r'[ \t]*!comment!', comments[i], code, 1)
-		
-			# Backfill comments //
-			for i in range(len(comments2)):
-				code = re.sub(r'[ \t]*!comment2!', comments2[i], code, 1)
-				
+			
 			# Indent
 			code = self.indent_code(code)
+			
+			# Backfill comments //
+			for i in range(len(comments2)):
+				code = re.sub(r'!comment2!', comments2[i].strip(), code, 1)
+				
 
 		
 		# Backfill urls
