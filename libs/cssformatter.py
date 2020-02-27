@@ -38,11 +38,19 @@ class CssFormater():
 		if action == 'compress':
 			# Remove comments
 			code = re.sub(r'\s*\/\*[\s\S]*?\*\/\s*', '', code)
+			
+			# Remove comments //
+			code = re.sub(r'\/\/.*\n', '', code)
 		else:
 			# Protect comments
 			commentReg = r'[ \t]*\/\*[\s\S]*?\*\/'
 			comments = re.findall(commentReg, code)
 			code = re.sub(commentReg, '!comment!', code)
+			
+			# Protect comments //
+			comment2Reg = r'\/\/.*\n'
+			comments2 = re.findall(comment2Reg, code)
+			code = re.sub(comment2Reg, '!comment2!', code)
 
 		# Protect strings
 		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
@@ -102,9 +110,14 @@ class CssFormater():
 			# Backfill comments
 			for i in range(len(comments)):
 				code = re.sub(r'[ \t]*!comment!', comments[i], code, 1)
-
+		
+			# Backfill comments //
+			for i in range(len(comments2)):
+				code = re.sub(r'[ \t]*!comment2!', comments2[i], code, 1)
+				
 			# Indent
 			code = self.indent_code(code)
+
 		
 		# Backfill urls
 		for i in range(len(urls)):
