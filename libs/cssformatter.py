@@ -105,19 +105,19 @@ class CssFormater():
 
 			# Indent
 			code = self.indent_code(code)
-
-		# Backfill strings
-		for i in range(len(strings)):
-			code = code.replace('!string!', strings[i][1], 1)
-
-		# Backfill sass
-		for i in range(len(sassvars)):
-			code = code.replace('!sass!', sassvars[i][1], 1)
-
+		
 		# Backfill urls
 		for i in range(len(urls)):
 			code = code.replace('!url!', urls[i][1], 1)
-
+		
+		# Backfill sass
+		for i in range(len(sassvars)):
+			code = code.replace('!sass!', sassvars[i][1], 1)
+			
+		# Backfill strings
+		for i in range(len(strings)):
+			code = code.replace('!string!', strings[i][1], 1)
+		
 		# Trim
 		code = re.sub(r'^\s*(\S+(\s+\S+)*)\s*$', r'\1', code)
 
@@ -278,7 +278,7 @@ class CssFormater():
 			lines[i] = self.indentation * thisLevel + lines[i]
 			
 			
-			#Test for stupid new lines
+			#Test for SASS new lines
 			if i > 1:
 				if lines[i - 1].strip() == "":
 					if lines[i].strip() == "}":
