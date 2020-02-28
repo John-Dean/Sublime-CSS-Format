@@ -58,12 +58,6 @@ class CssFormater():
 		strings = re.findall(stringReg, code)
 		code = re.sub(stringReg, r'\1!string!', code)
 		
-		
-		# Protect attributes
-		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
-		strings = re.findall(stringReg, code)
-		code = re.sub(stringReg, r'\1!string!', code)
-		
 		#Protect SASS variables
 		sassvarsReg = r'\#\{([^}])*\}'
 		sassvars = re.findall(sassvarsReg, code)
