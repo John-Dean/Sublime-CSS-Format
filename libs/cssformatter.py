@@ -52,7 +52,14 @@ class CssFormater():
 			comments2 = re.findall(comment2Reg, code)
 			code = re.sub(comment2Reg, '!comment2!\n', code)
 
+
 		# Protect strings
+		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
+		strings = re.findall(stringReg, code)
+		code = re.sub(stringReg, r'\1!string!', code)
+		
+		
+		# Protect attributes
 		stringReg = r'(content\s*:|[\w-]+\s*=)\s*(([\'\"]).*?\3)\s*'
 		strings = re.findall(stringReg, code)
 		code = re.sub(stringReg, r'\1!string!', code)
@@ -66,6 +73,11 @@ class CssFormater():
 		urlReg = r'((?:url|url-prefix|regexp)\([^\)]+\))'
 		urls = re.findall(urlReg, code)
 		code = re.sub(urlReg, r'\1!url!', code)
+		
+		# Protect brackets
+		bracketsReg = r'\[[^(\])]*\"[^(")]*\"\]'
+		brackets = re.findall(bracketsReg, code)
+		code = re.sub(bracketsReg, r'!brackets!', code)
 
 		# Pre process
 		code = re.sub(r'\s*([\{\}:;,])\s*', r'\1', code)	# remove \s before and after characters {}:;,
@@ -97,6 +109,7 @@ class CssFormater():
 		if action == 'compress':
 			# Remove last semicolon
 			code = code.replace(';}', '}')
+			
 		else:
 			# Add blank line between each block in `expand-bs` mode
 			if action == 'expand-bs':
@@ -117,9 +130,13 @@ class CssFormater():
 			# Backfill comments //
 			for i in range(len(comments2)):
 				code = re.sub(r'!comment2!', comments2[i].strip(), code, 1)
-				
-
+			
 		
+		
+		# Backfill brackets
+		for i in range(len(brackets)):
+			code = code.replace('!brackets!', brackets[i], 1)
+				
 		# Backfill urls
 		for i in range(len(urls)):
 			code = code.replace('!url!', urls[i][1], 1)
@@ -130,7 +147,7 @@ class CssFormater():
 			
 		# Backfill strings
 		for i in range(len(strings)):
-			code = code.replace('!string!', strings[i][1], 1)
+			code = code.replace('!string!', strings[i][1], 1)	
 		
 		# Trim
 		code = re.sub(r'^\s*(\S+(\s+\S+)*)\s*$', r'\1', code)
