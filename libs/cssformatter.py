@@ -61,12 +61,12 @@ class CssFormater():
 		#Protect SASS variables
 		sassvarsReg = r'\#\{([^}])*\}'
 		sassvars = re.findall(sassvarsReg, code)
-		code = re.sub(sassvarsReg, r'\1!sass!', code)
+		code = re.sub(sassvarsReg, '!sass!', code)
 
 		# Protect urls
 		urlReg = r'((?:url|url-prefix|regexp)\([^\)]+\))'
 		urls = re.findall(urlReg, code)
-		code = re.sub(urlReg, r'\1!url!', code)
+		code = re.sub(urlReg, '!url!', code)
 		
 		# Protect brackets
 		bracketsReg = r'\[[^(\])]*\"[^(")]*\"\]'
@@ -133,11 +133,11 @@ class CssFormater():
 				
 		# Backfill urls
 		for i in range(len(urls)):
-			code = code.replace('!url!', urls[i][1], 1)
+			code = code.replace('!url!', urls[i], 1)
 		
 		# Backfill sass
 		for i in range(len(sassvars)):
-			code = code.replace('!sass!', sassvars[i][1], 1)
+			code = code.replace('!sass!', sassvars[i], 1)
 			
 		# Backfill strings
 		for i in range(len(strings)):
