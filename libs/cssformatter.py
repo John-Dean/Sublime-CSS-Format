@@ -59,13 +59,15 @@ class CssFormater():
 		code = re.sub(stringReg, r'\1!string!', code)
 		
 		#Protect SASS variables
-		sassvarsReg = r'\#\{([^}])*\}'
+		sassvarsReg = r'\#\{[^}]*\}'
 		sassvars = re.findall(sassvarsReg, code)
+		print(sassvars)
 		code = re.sub(sassvarsReg, '!sass!', code)
 
 		# Protect urls
 		urlReg = r'((?:url|url-prefix|regexp)\([^\)]+\))'
 		urls = re.findall(urlReg, code)
+		print(urls)
 		code = re.sub(urlReg, '!url!', code)
 		
 		# Protect brackets
@@ -115,29 +117,29 @@ class CssFormater():
 			code = re.sub(r'\s*\n!comment!', '\n\n!comment!', code)
 
 			# Backfill comments
-			for i in range(len(comments)):
-				code = re.sub(r'[ \t]*!comment!', comments[i], code, 1)
+			for i in comments:
+				code = re.sub(r'[ \t]*!comment!', i, code, 1)
 			
 			# Indent
 			code = self.indent_code(code)
 			
 			# Backfill comments //
-			for i in range(len(comments2)):
-				code = re.sub(r'!comment2!', comments2[i].strip(), code, 1)
+			for i in comments2:
+				code = re.sub(r'!comment2!', i.strip(), code, 1)
 			
 		
 		
 		# Backfill brackets
-		for i in range(len(brackets)):
-			code = code.replace('!brackets!', brackets[i], 1)
+		for i in brackets:
+			code = code.replace('!brackets!', i, 1)
 				
 		# Backfill urls
-		for i in range(len(urls)):
-			code = code.replace('!url!', urls[i], 1)
+		for i in urls:
+			code = code.replace('!url!', i, 1)
 		
 		# Backfill sass
-		for i in range(len(sassvars)):
-			code = code.replace('!sass!', sassvars[i], 1)
+		for i in sassvars:
+			code = code.replace('!sass!', i, 1)
 			
 		# Backfill strings
 		for i in range(len(strings)):
